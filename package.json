@@ -1,0 +1,16 @@
+{
+  "name": "pi-zero-monitor",
+  "version": "1.0.0",
+  "description": "https://gist.github.com/gbaman/975e2db164b3ca2b51ae11e45e8fd40a",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ping": "^0.2.1",
+    "q": "^1.4.1",
+    "speedtest-net": "^1.2.12"
+  }
+}
