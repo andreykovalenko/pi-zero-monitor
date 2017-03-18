@@ -11,6 +11,9 @@
   "dependencies": {
     "ping": "^0.2.1",
     "q": "^1.4.1",
-    "speedtest-net": "^1.2.12"
+    "speedtest-net": "1.2.12"
+  },
+  "devDependencies": {
+    "mocha": "^3.2.0"
   }
 }

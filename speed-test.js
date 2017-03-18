@@ -1,15 +1,26 @@
 const speedTestNet = require('speedtest-net');
 const config = require('./config')
 const test = speedTestNet({maxTime: config.speedTestTime});
-const iftt = require('./iftt-request')('speed-tested');
+const iftt = require('./iftt-request');
+const speedTestMonitor = iftt('speed-tested');
+const notifier = require('./ios-notifier');
+const slowInternetNotifier = notifier('slow-internet');
+const errorNotifier = notifier('failed-to-test-internet');
 
 test.on('data', data => {
-  const postData = {value1: data.speeds.download, value2: data.speeds.upload, value3: data.server.ping};
-  iftt(postData);
-  console.log(postData);
+  speedTestMonitor(data.speeds.download, data.speeds.upload, data.server.ping);
+
+  if (checkSpeedTestResults(data)) {
+    slowInternetNotifier.send(data.speeds.download + 'Mb/s', data.speeds.upload + 'Mb/s');
+  }
 });
-console.log
-test.on('error', err => {
-  console.error(err);
-});
+
+test.on('error', errorNotifier.send);
+
+function checkSpeedTestResults(data) {
+  const speedConfig = config.notifications;
+  return data.speeds.download < speedConfig.download ||
+    data.speeds.upload < speedConfig.upload
+}
+
 

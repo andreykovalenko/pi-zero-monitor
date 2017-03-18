@@ -15,7 +15,7 @@ module.exports = (method) => {
 
   return post;
 
-  function post(data) {
+  function post(val1, val2, val3) {
     let postReq = https.request(postOptions, function(res) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
@@ -24,7 +24,7 @@ module.exports = (method) => {
     });
 
     // post the data
-    postReq.write(JSON.stringify(data));
+    postReq.write(JSON.stringify({value1: val1, value2: val2, value3: val3}));
     postReq.end();
   }
 }

@@ -1,9 +1,5 @@
 const ping = require('ping');
 const Q = require('q');
-const config = require('./config');
-
-const hosts = config.pingHosts;
-const iftt = require('./iftt-request')('ping-tested');
 
 var cfg = {
     timeout: 10,
@@ -11,27 +7,24 @@ var cfg = {
     extra: ["-i 2"],
 };
 
-var pinging = range(0, config.pingTries)
-  .reduce((promise) => {
-  return promise.then(allPingResults => {
-
-    return pingHosts().then(pingResults => {
-      return allPingResults.concat(pingResults);
-    });
-  });
-}, Q.when([]));
-
-pinging
+module.exports = (hosts, nTimes) => {
+  return pingTimes(hosts, nTimes)
   .then(groupByHost)
   .then(getVals)
-  // .then(console.log)
-  .then((results)=>{
-    results.forEach((ping) => {
-      const postData = {value1: ping.host, value2: ping.alive, value3: ping.time};
-      iftt(postData);
-    });
-  })
   .catch(console.error);
+};
+
+
+function pingTimes(hosts, nTimes) {
+  return range(0, nTimes)
+    .reduce(promise => {
+      return promise.then(allResults => {
+          return pingHosts(hosts).then(pingResults => {
+              return allResults.concat(pingResults);
+            });
+        });
+  }, Q.when([]));
+}
 
 function getVals(obj) {
   return Object.keys(obj).map((key)=>{
@@ -60,7 +53,7 @@ function mergeResults(res1, res2) {
   };
 }
 
-function pingHosts() {
+function pingHosts(hosts) {
   let aliveHosts = hosts.map(host => {
     return ping.promise.probe(host, cfg)
       .then(response => {
